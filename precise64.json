@@ -1,0 +1,62 @@
+{
+    "builders": [
+        {
+            "type": "virtualbox-iso",
+            "vm_name": "precise64",
+            "guest_os_type": "Ubuntu_64",
+            "hard_drive_interface": "sata",
+            "iso_url": "http://old-releases.ubuntu.com/releases/12.04.1/ubuntu-12.04.1-server-amd64.iso",
+            "iso_checksum": "a8c667e871f48f3a662f3fbf1c3ddb17",
+            "iso_checksum_type": "md5",
+            "ssh_wait_timeout": "120m",
+            "ssh_username": "vagrant",
+            "ssh_password": "vagrant",
+            "http_directory": "www",
+            "output_directory": "precise64",
+            "boot_wait": "5s",
+            "boot_command": [
+                "<esc><esc><enter><wait>",
+                "/install/vmlinuz noapic ",
+                "auto=true url={{ .HTTPIP }}:{{ .HTTPPort }} ",
+                "hostname=precise64 fb=false ",
+                "preseed/late_command=\"",
+                "in-target wget -q -O /tmp/postinstall.sh http://{{ .HTTPIP }}:{{ .HTTPPort }}/d-i/precise/postinstall.sh ; ",
+                "in-target /bin/sh /tmp/postinstall.sh; ",
+                "\" ",
+                "initrd=/install/initrd.gz -- <enter>"
+            ],
+            "shutdown_command": "sudo shutdown -P now"
+        }
+    ],
+    "provisioners": [
+        { 
+            "type": "file",
+            "source": "files/puppetlabs.gpg",
+            "destination": "/tmp/puppetlabs.gpg"
+        },
+        { 
+            "type": "file",
+            "source": "files/puppetlabs-precise.list",
+            "destination": "/tmp/puppetlabs.list"
+        },
+        {
+            "type": "shell",
+            "scripts": [
+                "scripts/common/vagrant.sh",
+                "scripts/common/puppet-apt.sh",
+                "scripts/precise/vboxguest.sh",
+                "scripts/precise/cleanup.sh"
+            ]
+        }
+    ],
+    "post-processors": [
+        { 
+            "type": "vagrant",
+            "override": {
+                "virtualbox": {
+                    "output": "precise64.box"
+                }
+            }
+        }
+    ]
+}

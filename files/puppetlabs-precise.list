@@ -1,0 +1,2 @@
+deb http://apt.puppetlabs.com/ precise main
+deb http://apt.puppetlabs.com/ precise dependencies
