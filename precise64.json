@@ -43,15 +43,16 @@
             "type": "shell",
             "scripts": [
                 "scripts/common/vagrant.sh",
-                "scripts/common/puppet-apt.sh",
-                "scripts/precise/vboxguest.sh",
-                "scripts/precise/cleanup.sh"
+                "scripts/ubuntu/puppet.sh",
+                "scripts/ubuntu/vboxguest.sh",
+                "scripts/ubuntu/cleanup.sh"
             ]
         }
     ],
     "post-processors": [
         { 
             "type": "vagrant",
+            "compression_level": 5,
             "override": {
                 "virtualbox": {
                     "output": "precise64.box"
