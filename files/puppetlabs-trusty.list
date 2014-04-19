@@ -1,0 +1,2 @@
+deb http://apt.puppetlabs.com/ trusty main
+deb http://apt.puppetlabs.com/ trusty dependencies

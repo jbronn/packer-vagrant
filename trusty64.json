@@ -1,0 +1,63 @@
+{
+    "builders": [
+        {
+            "type": "virtualbox-iso",
+            "vm_name": "trusty64",
+            "guest_os_type": "Ubuntu_64",
+            "hard_drive_interface": "sata",
+            "iso_url": "http://releases.ubuntu.com/14.04/ubuntu-14.04-server-amd64.iso",
+            "iso_checksum": "01545fa976c8367b4f0d59169ac4866c",
+            "iso_checksum_type": "md5",
+            "ssh_wait_timeout": "120m",
+            "ssh_username": "vagrant",
+            "ssh_password": "vagrant",
+            "http_directory": "www",
+            "output_directory": "trusty64",
+            "boot_wait": "5s",
+            "boot_command": [
+                "<esc><esc><enter><wait>",
+                "/install/vmlinuz noapic ",
+                "auto=true url={{ .HTTPIP }}:{{ .HTTPPort }} ",
+                "hostname=trusty64 fb=false ",
+                "preseed/late_command=\"",
+                "in-target wget -q -O /tmp/postinstall.sh http://{{ .HTTPIP }}:{{ .HTTPPort }}/d-i/trusty/postinstall.sh ; ",
+                "in-target /bin/sh /tmp/postinstall.sh; ",
+                "\" ",
+                "initrd=/install/initrd.gz -- <enter>"
+            ],
+            "shutdown_command": "sudo shutdown -P now"
+        }
+    ],
+    "provisioners": [
+        { 
+            "type": "file",
+            "source": "files/puppetlabs.gpg",
+            "destination": "/tmp/puppetlabs.gpg"
+        },
+        { 
+            "type": "file",
+            "source": "files/puppetlabs-trusty.list",
+            "destination": "/tmp/puppetlabs.list"
+        },
+        {
+            "type": "shell",
+            "scripts": [
+                "scripts/common/vagrant.sh",
+                "scripts/ubuntu/puppet.sh",
+                "scripts/ubuntu/vboxguest.sh",
+                "scripts/ubuntu/cleanup.sh"
+            ]
+        }
+    ],
+    "post-processors": [
+        { 
+            "type": "vagrant",
+            "compression_level": 5,
+            "override": {
+                "virtualbox": {
+                    "output": "trusty64.box"
+                }
+            }
+        }
+    ]
+}
